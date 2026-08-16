@@ -1,0 +1,79 @@
+{
+  "manifest_version": 3,
+  "name": "AlgoVault - Multi-Platform DSA Sync",
+  "version": "1.0.0",
+  "description": "Automatically sync accepted solutions from LeetCode, GeeksforGeeks, HackerRank & Codeforces to your personal GitHub repository.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://leetcode.com/*",
+    "https://leetcode.cn/*",
+    "https://*.geeksforgeeks.org/*",
+    "https://www.hackerrank.com/*",
+    "https://codeforces.com/*",
+    "https://api.github.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AlgoVault Dashboard"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://leetcode.com/*",
+        "https://leetcode.cn/*"
+      ],
+      "js": [
+        "toast.js",
+        "content_leetcode.js"
+      ],
+      "css": [
+        "toast.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.geeksforgeeks.org/*"
+      ],
+      "js": [
+        "toast.js",
+        "content_gfg.js"
+      ],
+      "css": [
+        "toast.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.hackerrank.com/*"
+      ],
+      "js": [
+        "toast.js",
+        "content_hackerrank.js"
+      ],
+      "css": [
+        "toast.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://codeforces.com/*"
+      ],
+      "js": [
+        "toast.js",
+        "content_codeforces.js"
+      ],
+      "css": [
+        "toast.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

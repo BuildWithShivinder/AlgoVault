@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlgoVault</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-mark">AV</div>
+        <div class="brand-text">
+          <h2>AlgoVault</h2>
+          <span class="brand-sub">Multi-Platform Archive</span>
+        </div>
+      </div>
+      <div class="connection-pill disconnected" id="connectionStatus">
+        <span class="status-dot"></span>
+        <span class="status-label">Disconnected</span>
+      </div>
+    </header>
+
+    <!-- Current Detected Problem Card -->
+    <section class="card problem-card" id="problemCard">
+      <div class="card-header">
+        <span class="card-label">Active Problem</span>
+        <span class="badge diff-unknown" id="problemDiff">Checking</span>
+      </div>
+      <div class="problem-title" id="problemTitle">Not on a recognized problem page</div>
+      <div class="problem-meta">
+        <span class="meta-tag" id="problemPlatform">Platform: --</span>
+        <span class="meta-tag" id="problemLang">Language: --</span>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-btn active" data-tab="analyticsTab">Analytics</button>
+      <button class="nav-btn" data-tab="settingsTab">Settings</button>
+      <button class="nav-btn" data-tab="activityTab">Activity</button>
+    </nav>
+
+    <!-- Tab 1: Analytics -->
+    <main class="tab-panel active" id="analyticsTab">
+      <div class="grid-stats">
+        <div class="stat-box">
+          <span class="stat-number" id="statLeetcode">0</span>
+          <span class="stat-name">LeetCode</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number" id="statGfg">0</span>
+          <span class="stat-name">GeeksforGeeks</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number" id="statHackerRank">0</span>
+          <span class="stat-name">HackerRank</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-number" id="statCodeforces">0</span>
+          <span class="stat-name">Codeforces</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Difficulty Distribution</div>
+        <div class="progress-track">
+          <div class="progress-segment bar-easy" id="barEasy" style="width: 33%"></div>
+          <div class="progress-segment bar-medium" id="barMedium" style="width: 33%"></div>
+          <div class="progress-segment bar-hard" id="barHard" style="width: 34%"></div>
+        </div>
+        <div class="legend-row">
+          <span class="legend-point"><span class="dot easy"></span> Easy (<span id="countEasy">0</span>)</span>
+          <span class="legend-point"><span class="dot medium"></span> Medium (<span id="countMedium">0</span>)</span>
+          <span class="legend-point"><span class="dot hard"></span> Hard (<span id="countHard">0</span>)</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Tab 2: Settings -->
+    <main class="tab-panel" id="settingsTab">
+      <div class="form-container">
+        <div class="field-group">
+          <label for="ghToken">Personal Access Token</label>
+          <div class="input-action">
+            <input type="password" id="ghToken" placeholder="github_pat_..." autocomplete="off" />
+            <button type="button" class="icon-btn" id="toggleTokenBtn">Show</button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label for="ghOwner">GitHub Username</label>
+            <input type="text" id="ghOwner" placeholder="username" />
+          </div>
+          <div class="field-group">
+            <label for="ghRepo">Repository</label>
+            <input type="text" id="ghRepo" placeholder="DSA-Problem-Vault" />
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="ghBranch">Branch</label>
+          <input type="text" id="ghBranch" placeholder="main" value="main" />
+        </div>
+
+        <div class="notification-box hidden" id="statusMessage"></div>
+
+        <div class="action-row">
+          <button class="btn btn-secondary" id="saveSettingsBtn">Save Configuration</button>
+          <button class="btn btn-primary" id="testConnBtn">Test Connection</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Tab 3: Activity -->
+    <main class="tab-panel" id="activityTab">
+      <div class="activity-feed" id="activityList">
+        <div class="empty-feed">No recorded submissions yet.</div>
+      </div>
+    </main>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+/* CodeSync Clean Dark Toast Notification */
+.codesync-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+  pointer-events: none;
+}
+
+.codesync-toast {
+  pointer-events: auto;
+  min-width: 300px;
+  max-width: 400px;
+  background: #0d0f17;
+  border: 1px solid #1e2330;
+  box-shadow: 0 16px 24px -4px rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: codesync-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: all 0.2s ease;
+}
+
+.codesync-toast-success {
+  border-left: 3px solid #10b981;
+}
+
+.codesync-toast-error {
+  border-left: 3px solid #ef4444;
+}
+
+.codesync-toast-syncing {
+  border-left: 3px solid #2563eb;
+}
+
+.codesync-toast-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.codesync-toast-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.codesync-toast-subtitle {
+  font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.codesync-toast-link {
+  color: #60a5fa;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 4px;
+  display: inline-block;
+  font-size: 11px;
+}
+
+.codesync-toast-link:hover {
+  text-decoration: underline;
+  color: #93c5fd;
+}
+
+.codesync-toast-close {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+  border-radius: 4px;
+}
+
+.codesync-toast-close:hover {
+  color: #f3f4f6;
+}
+
+@keyframes codesync-slide-in {
+  from {
+    transform: translateY(100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes codesync-slide-out {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+  }
+}
