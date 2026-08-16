@@ -202,7 +202,7 @@ Configuration and credentials used by the extension are stored locally through C
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/shivinders12/AlgoVault.git
+git clone https://github.com/BuildWithShivinder/AlgoVault.git
 cd AlgoVault
 ```
 
