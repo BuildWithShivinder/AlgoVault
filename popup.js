@@ -1,6 +1,18 @@
 /**
  * AlgoVault Extension Popup Logic
  */
+// GitHub API Error Handling
+function getFriendlyGitHubError(status, message) {
+  if (status === 401) {
+    return "GitHub authentication failed. Please check your Personal Access Token.";
+  } else if (status === 403) {
+    return "GitHub denied the request. Please check your token permissions or rate limit.";
+  } else if (status === 404) {
+    return "GitHub repository not found. Please check the username and repository name.";
+  } else {
+    return `GitHub request failed${message ? `: ${message}` : "."}`;
+  }
+}
 document.addEventListener('DOMContentLoaded', () => {
   // Tab Bar Switching
   const navBtns = document.querySelectorAll('.nav-btn');
@@ -225,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchCsvFromGitHub(token, owner, repo, branch);
       } else {
         const errData = await res.json();
-        showStatus(`Connection failed: ${errData.message || res.statusText}`, 'error');
+        showStatus(`Connection failed: ${getFriendlyGitHubError(res.status, errData.message)}`, 'error');
         setConnectionBadge(false);
       }
     } catch (err) {
