@@ -1,4 +1,4 @@
-/* CodeSync Sleek Black Dark Theme */
+/* AlgoVault Sleek Obsidian Black Theme + AI Styles */
 :root {
   --bg-root: #08090c;
   --card-bg: #10121a;
@@ -8,6 +8,8 @@
   --text-muted: #6b7280;
   --accent: #2563eb;
   --accent-light: rgba(37, 99, 235, 0.15);
+  --ai-cyan: #38bdf8;
+  --ai-cyan-bg: rgba(56, 189, 248, 0.12);
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
@@ -21,7 +23,7 @@
 }
 
 body {
-  width: 370px;
+  width: 380px;
   background-color: var(--bg-root);
   color: var(--text-primary);
   font-family: var(--font-family);
@@ -70,6 +72,20 @@ body {
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--ai-cyan-bg);
+  color: var(--ai-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  text-transform: uppercase;
 }
 
 .brand-sub {
@@ -182,7 +198,7 @@ body {
   border: none;
   color: var(--text-muted);
   padding: 6px 0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   border-radius: 6px;
   cursor: pointer;
@@ -267,6 +283,80 @@ body {
 .dot.easy { background: var(--success); }
 .dot.medium { background: var(--warning); }
 .dot.hard { background: var(--danger); }
+
+/* AI Assist Tab Styles */
+.ai-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ai-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.ai-metric-box {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.ai-metric-val {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ai-cyan);
+  font-family: monospace;
+}
+
+.ai-metric-lbl {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.ai-pattern-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 4px;
+}
+
+.ai-recommendation-card {
+  border-color: rgba(56, 189, 248, 0.25);
+  background: linear-gradient(135deg, rgba(16, 18, 26, 0.95), rgba(15, 23, 42, 0.95));
+}
+
+.rec-title a {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ai-cyan);
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.rec-title a:hover {
+  text-decoration: underline;
+  color: #7dd3fc;
+}
+
+.ai-text {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.ai-footer {
+  text-align: right;
+  font-size: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+}
 
 /* Settings Form */
 .form-container {

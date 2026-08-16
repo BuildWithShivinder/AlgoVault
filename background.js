@@ -1,5 +1,7 @@
 // AlgoVault Background Service Worker
 
+importScripts('ai_engine.js');
+
 chrome.runtime.onInstalled.addListener(() => {
   console.log('[AlgoVault] Service worker active.');
 });
@@ -75,7 +77,6 @@ function getFolderName(data) {
     return slug;
   }
 
-  // LeetCode padding: 0001-two-sum
   const numStr = data.number && !isNaN(parseInt(data.number, 10)) ? String(data.number).padStart(4, '0') : '';
   return numStr ? `${numStr}-${slug}` : slug;
 }
@@ -138,10 +139,6 @@ async function uploadFileToGitHub(token, owner, repo, branch, path, commitMessag
   return await putRes.json();
 }
 
-/**
- * Updates `submissions.csv` log without Runtime/Memory columns.
- * Header: Platform,Problem ID,Title,Difficulty,Language,URL,Timestamp
- */
 async function updateCsvMasterLog(token, owner, repo, branch, sub) {
   const path = 'submissions.csv';
   const header = 'Platform,Problem ID,Title,Difficulty,Language,URL,Timestamp';
@@ -240,9 +237,6 @@ async function updateCsvMasterLog(token, owner, repo, branch, sub) {
   return updatedCsv;
 }
 
-/**
- * Updates root README.md dashboard with Shields.io badges and clean index table
- */
 async function updateRootDashboard(token, owner, repo, branch, csvContent) {
   const path = 'README.md';
   const lines = (csvContent || '').trim().split('\n');
@@ -303,10 +297,10 @@ async function updateRootDashboard(token, owner, repo, branch, csvContent) {
   <img src="https://img.shields.io/badge/GeeksforGeeks-${platformCounts.GeeksforGeeks}-2e7d32?style=for-the-badge&logo=geeksforgeeks&logoColor=white" />
   <img src="https://img.shields.io/badge/HackerRank-${platformCounts.HackerRank}-00ea64?style=for-the-badge&logo=hackerrank&logoColor=white" />
   <img src="https://img.shields.io/badge/Codeforces-${platformCounts.Codeforces}-3182ce?style=for-the-badge&logo=codeforces&logoColor=white" />
-  <img src="https://img.shields.io/badge/Synced%20With-AlgoVault-38bdf8?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Synced%20With-AlgoVault%20AI-38bdf8?style=for-the-badge" />
 </p>
 
-> A personal competitive programming archive containing accepted solutions across **LeetCode**, **GeeksforGeeks**, **HackerRank**, and **Codeforces** — automatically captured, formatted, and committed via **[AlgoVault](https://github.com/${owner}/AlgoVault)**.
+> A personal competitive programming archive containing accepted solutions across **LeetCode**, **GeeksforGeeks**, **HackerRank**, and **Codeforces** — automatically captured, formatted, analyzed, and committed via **[AlgoVault](https://github.com/${owner}/AlgoVault)**.
 
 ---
 
@@ -347,10 +341,10 @@ All distinct submission records are updated in real-time in the central sheet: [
 
 async function syncSolutionToGitHub(subData) {
   const config = await new Promise(resolve => {
-    chrome.storage.local.get(['ghToken', 'ghOwner', 'ghRepo', 'ghBranch'], resolve);
+    chrome.storage.local.get(['ghToken', 'ghOwner', 'ghRepo', 'ghBranch', 'geminiKey'], resolve);
   });
 
-  const { ghToken, ghOwner, ghRepo, ghBranch = 'main' } = config;
+  const { ghToken, ghOwner, ghRepo, ghBranch = 'main', geminiKey = '' } = config;
 
   if (!ghToken || !ghOwner || !ghRepo) {
     throw new Error('GitHub credentials missing. Set Token, Username, and Repo in extension popup.');
@@ -366,14 +360,29 @@ async function syncSolutionToGitHub(subData) {
   const readmePath = `${platform}/${folderName}/README.md`;
 
   const solutionCode = subData.code || '// Solution Code';
+
+  console.log('[AlgoVault AI] Running AI analysis & recommendation engine...');
+  const aiAnalysis = await analyzeCodeWithGemini(solutionCode, ext, subData.title, geminiKey);
+  const rec = aiAnalysis.recommendedNext || {};
+
   const readmeContent = `# ${subData.number ? subData.number + '. ' : ''}${subData.title}\n\n` +
     `* **Platform**: ${platform}\n` +
     `* **Difficulty**: ${subData.difficulty || 'Medium'}\n` +
     `* **Language**: ${subData.language || 'C++'}\n` +
-    `* **Url**: ${subData.url}\n\n` +
-    `\`\`\`${ext}\n${solutionCode}\n\`\`\`\n`;
+    `* **Problem Link**: [${subData.title}](${subData.url})\n\n` +
+    `## 🧠 AI Complexity Analysis\n\n` +
+    `* ⏱️ **Time Complexity**: \`${aiAnalysis.timeComplexity}\`\n` +
+    `* 💾 **Space Complexity**: \`${aiAnalysis.spaceComplexity}\`\n` +
+    `* 🧩 **Pattern**: \`${aiAnalysis.pattern}\`\n` +
+    `* 💡 **Intuition**: ${aiAnalysis.intuition}\n` +
+    `* 🎯 **Edge Cases**: ${aiAnalysis.edgeCases}\n` +
+    `* 🤖 *Engine: ${aiAnalysis.source}*\n\n` +
+    `## 🚀 What You Should Try Next\n\n` +
+    `* 🎯 **Recommended Practice**: [${rec.title || 'Next Problem'}](${rec.url || '#'}) (${rec.difficulty || 'Medium'})\n` +
+    `* 💡 **Why Try Next**: ${rec.reason || 'Builds on this pattern.'}\n\n` +
+    `## Solution Code\n\`\`\`${ext}\n${solutionCode}\n\`\`\`\n`;
 
-  const commitMsg = `Sync ${platform}: ${subData.title}`;
+  const commitMsg = `Sync ${platform}: ${subData.title} (AI: ${aiAnalysis.timeComplexity})`;
 
   await uploadFileToGitHub(ghToken, ghOwner, ghRepo, ghBranch, solutionPath, commitMsg, solutionCode);
   await uploadFileToGitHub(ghToken, ghOwner, ghRepo, ghBranch, readmePath, `Update README ${subData.title}`, readmeContent);
@@ -381,11 +390,14 @@ async function syncSolutionToGitHub(subData) {
   const csvContent = await updateCsvMasterLog(ghToken, ghOwner, ghRepo, ghBranch, subData);
   await updateRootDashboard(ghToken, ghOwner, ghRepo, ghBranch, csvContent);
 
+  chrome.storage.local.set({ lastAiAnalysis: { ...aiAnalysis, problemTitle: subData.title, platform: platform } });
+
   return {
     success: true,
     platform: platform,
     folder: folderName,
     repo: `${ghOwner}/${ghRepo}`,
+    aiAnalysis: aiAnalysis,
     timestamp: formatLocalTimestamp(Date.now())
   };
 }

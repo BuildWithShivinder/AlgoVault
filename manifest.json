@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "AlgoVault - Multi-Platform DSA Sync",
-  "version": "1.0.0",
-  "description": "Automatically sync accepted solutions from LeetCode, GeeksforGeeks, HackerRank & Codeforces to your personal GitHub repository.",
+  "name": "AlgoVault - AI-Powered Multi-Platform DSA Sync",
+  "version": "1.1.0",
+  "description": "Automatically sync accepted solutions from LeetCode, GeeksforGeeks, HackerRank & Codeforces to GitHub with AI complexity analysis.",
   "permissions": [
     "storage"
   ],
@@ -12,11 +12,12 @@
     "https://*.geeksforgeeks.org/*",
     "https://www.hackerrank.com/*",
     "https://codeforces.com/*",
-    "https://api.github.com/*"
+    "https://api.github.com/*",
+    "https://generativelanguage.googleapis.com/*"
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "AlgoVault Dashboard"
+    "default_title": "AlgoVault AI Dashboard"
   },
   "background": {
     "service_worker": "background.js"

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AlgoVault</title>
+  <title>AlgoVault AI</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
       <div class="brand">
         <div class="brand-mark">AV</div>
         <div class="brand-text">
-          <h2>AlgoVault</h2>
+          <h2>AlgoVault <span class="ai-pill">AI</span></h2>
           <span class="brand-sub">Multi-Platform Archive</span>
         </div>
       </div>
@@ -40,6 +40,7 @@
     <!-- Navigation Tabs -->
     <nav class="nav-tabs">
       <button class="nav-btn active" data-tab="analyticsTab">Analytics</button>
+      <button class="nav-btn" data-tab="aiTab">AI Assist</button>
       <button class="nav-btn" data-tab="settingsTab">Settings</button>
       <button class="nav-btn" data-tab="activityTab">Activity</button>
     </nav>
@@ -80,7 +81,54 @@
       </div>
     </main>
 
-    <!-- Tab 2: Settings -->
+    <!-- Tab 2: AI Assist -->
+    <main class="tab-panel" id="aiTab">
+      <div class="ai-container">
+        <div class="ai-metrics-row">
+          <div class="ai-metric-box">
+            <span class="ai-metric-val" id="aiTimeComp">--</span>
+            <span class="ai-metric-lbl">Time Complexity</span>
+          </div>
+          <div class="ai-metric-box">
+            <span class="ai-metric-val" id="aiSpaceComp">--</span>
+            <span class="ai-metric-lbl">Space Complexity</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Algorithmic Pattern</div>
+          <div class="ai-pattern-badge" id="aiPattern">Arrays & Hashing</div>
+        </div>
+
+        <!-- What You Should Try Next Card -->
+        <div class="card ai-recommendation-card">
+          <div class="card-header">
+            <span class="card-label">What You Should Try Next</span>
+            <span class="badge diff-medium" id="recDiff">Medium</span>
+          </div>
+          <div class="rec-title">
+            <a href="#" target="_blank" rel="noopener noreferrer" id="recLink">3Sum</a>
+          </div>
+          <div class="ai-text" id="recReason">Builds on this pattern to handle multi-variable summation.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Intuition & Key Insight</div>
+          <div class="ai-text" id="aiIntuition">Solve a problem on LeetCode, GFG, HackerRank or Codeforces to view AI solution analysis.</div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Edge Cases & Notes</div>
+          <div class="ai-text" id="aiEdgeCases">Boundary conditions and constraints analysis.</div>
+        </div>
+
+        <div class="ai-footer">
+          <span class="ai-source" id="aiSource">Engine: Zero-Latency Local AI</span>
+        </div>
+      </div>
+    </main>
+
+    <!-- Tab 3: Settings -->
     <main class="tab-panel" id="settingsTab">
       <div class="form-container">
         <div class="field-group">
@@ -102,9 +150,15 @@
           </div>
         </div>
 
-        <div class="field-group">
-          <label for="ghBranch">Branch</label>
-          <input type="text" id="ghBranch" placeholder="main" value="main" />
+        <div class="field-row">
+          <div class="field-group">
+            <label for="ghBranch">Branch</label>
+            <input type="text" id="ghBranch" placeholder="main" value="main" />
+          </div>
+          <div class="field-group">
+            <label for="geminiKey">Gemini API Key (Optional)</label>
+            <input type="password" id="geminiKey" placeholder="AIzaSy..." autocomplete="off" />
+          </div>
         </div>
 
         <div class="notification-box hidden" id="statusMessage"></div>
@@ -116,7 +170,7 @@
       </div>
     </main>
 
-    <!-- Tab 3: Activity -->
+    <!-- Tab 4: Activity -->
     <main class="tab-panel" id="activityTab">
       <div class="activity-feed" id="activityList">
         <div class="empty-feed">No recorded submissions yet.</div>

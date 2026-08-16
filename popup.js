@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ghOwnerInput = document.getElementById('ghOwner');
   const ghRepoInput = document.getElementById('ghRepo');
   const ghBranchInput = document.getElementById('ghBranch');
+  const geminiKeyInput = document.getElementById('geminiKey');
   const saveSettingsBtn = document.getElementById('saveSettingsBtn');
   const testConnBtn = document.getElementById('testConnBtn');
   const statusMsg = document.getElementById('statusMessage');
@@ -42,6 +43,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const problemDiff = document.getElementById('problemDiff');
   const problemPlatform = document.getElementById('problemPlatform');
   const problemLang = document.getElementById('problemLang');
+
+  // AI Elements
+  const aiTimeComp = document.getElementById('aiTimeComp');
+  const aiSpaceComp = document.getElementById('aiSpaceComp');
+  const aiPattern = document.getElementById('aiPattern');
+  const aiIntuition = document.getElementById('aiIntuition');
+  const aiEdgeCases = document.getElementById('aiEdgeCases');
+  const aiSource = document.getElementById('aiSource');
+
+  // AI Recommendation Elements
+  const recLink = document.getElementById('recLink');
+  const recDiff = document.getElementById('recDiff');
+  const recReason = document.getElementById('recReason');
 
   function normalizePlatform(p) {
     if (!p) return 'LeetCode';
@@ -69,11 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Load Saved Settings & Storage
-  chrome.storage.local.get(['ghToken', 'ghOwner', 'ghRepo', 'ghBranch', 'syncHistory', 'solvedMap', 'currentDetectedProblem'], (data) => {
+  chrome.storage.local.get(['ghToken', 'ghOwner', 'ghRepo', 'ghBranch', 'geminiKey', 'syncHistory', 'solvedMap', 'currentDetectedProblem', 'lastAiAnalysis'], (data) => {
     if (data.ghToken) tokenInput.value = data.ghToken;
     if (data.ghOwner) ghOwnerInput.value = data.ghOwner;
     if (data.ghRepo) ghRepoInput.value = data.ghRepo || 'DSA-Problem-Vault';
     if (data.ghBranch) ghBranchInput.value = data.ghBranch || 'main';
+    if (data.geminiKey) geminiKeyInput.value = data.geminiKey;
 
     if (data.ghToken && data.ghOwner && data.ghRepo) {
       setConnectionBadge(true);
@@ -85,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderActiveProblem(data.currentDetectedProblem);
     renderAnalytics(data.syncHistory || [], data.solvedMap || {});
     renderActivity(data.syncHistory || []);
+    renderAiAnalysis(data.lastAiAnalysis);
   });
 
   // Query current active browser tab for live problem details
@@ -123,13 +139,51 @@ document.addEventListener('DOMContentLoaded', () => {
     problemLang.textContent = `Language: ${prob.language || 'C++'}`;
   }
 
+  function renderAiAnalysis(ai) {
+    if (!ai) {
+      aiTimeComp.textContent = '--';
+      aiSpaceComp.textContent = '--';
+      aiPattern.textContent = 'Arrays & Hashing';
+      aiIntuition.textContent = 'Solve a problem on LeetCode, GFG, HackerRank or Codeforces to view AI solution analysis.';
+      aiEdgeCases.textContent = 'Boundary conditions and constraints analysis.';
+      aiSource.textContent = 'Engine: Zero-Latency Local AI';
+
+      recLink.textContent = '3Sum';
+      recLink.href = 'https://leetcode.com/problems/3sum/';
+      recDiff.textContent = 'Medium';
+      recDiff.className = 'badge diff-medium';
+      recReason.textContent = 'Builds on two-pointers to find 3-element sum triplets.';
+      return;
+    }
+
+    aiTimeComp.textContent = ai.timeComplexity || 'O(N)';
+    aiSpaceComp.textContent = ai.spaceComplexity || 'O(1)';
+    aiPattern.textContent = ai.pattern || 'Arrays & Hashing';
+    aiIntuition.textContent = ai.intuition || 'Analyzed solution structure.';
+    aiEdgeCases.textContent = ai.edgeCases || 'Standard boundary constraints.';
+    aiSource.textContent = `Engine: ${ai.source || 'AlgoVault AI Engine'}`;
+
+    const rec = ai.recommendedNext || {};
+    recLink.textContent = rec.title || '3Sum';
+    recLink.href = rec.url || 'https://leetcode.com/problems/3sum/';
+    recDiff.textContent = rec.difficulty || 'Medium';
+    
+    const rDiff = (rec.difficulty || '').toLowerCase();
+    if (rDiff === 'easy') recDiff.className = 'badge diff-easy';
+    else if (rDiff === 'hard') recDiff.className = 'badge diff-hard';
+    else recDiff.className = 'badge diff-medium';
+
+    recReason.textContent = rec.reason || 'Recommended follow-up problem.';
+  }
+
   // Save Settings Handler
   saveSettingsBtn.addEventListener('click', () => {
     const config = {
       ghToken: tokenInput.value.trim(),
       ghOwner: ghOwnerInput.value.trim(),
       ghRepo: ghRepoInput.value.trim() || 'DSA-Problem-Vault',
-      ghBranch: ghBranchInput.value.trim() || 'main'
+      ghBranch: ghBranchInput.value.trim() || 'main',
+      geminiKey: geminiKeyInput.value.trim()
     };
 
     chrome.storage.local.set(config, () => {
@@ -236,9 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /**
-   * Calculates UNIQUE problem counts per platform.
-   */
   function renderAnalytics(history, solvedMap = {}) {
     const uniqueMap = new Map();
 
@@ -294,7 +345,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('barHard').style.width = `${((hard / total) * 100).toFixed(0)}%`;
   }
 
-  // Render Activity Feed
   function renderActivity(history) {
     const list = document.getElementById('activityList');
     if (!history || history.length === 0) {
