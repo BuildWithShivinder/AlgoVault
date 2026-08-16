@@ -1,95 +1,379 @@
-# ⚡ AlgoVault v1.1 — AI-Powered Multi-Platform DSA Sync
+# ⚡ AlgoVault
 
 <p align="center">
   <img src="https://img.shields.io/badge/Chrome-Extension%20(MV3)-38bdf8?style=for-the-badge&logo=googlechrome&logoColor=white" />
   <img src="https://img.shields.io/badge/Version-1.1.0-10b981?style=for-the-badge" />
   <img src="https://img.shields.io/badge/AI-Gemini%201.5%20Flash%20%7C%20Local-8b5cf6?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Zero-Backend-ffa116?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Zero--Backend-ffa116?style=for-the-badge" />
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" />
 </p>
 
-> An AI-powered, zero-backend Chrome Extension (Manifest V3) that automatically captures accepted Data Structures & Algorithms solutions across **LeetCode**, **GeeksforGeeks**, **HackerRank**, and **Codeforces** — organizing source code, generating AI Big-O complexity analysis, recommending next-level practice problems, and committing a dynamic dashboard directly to your GitHub repository!
+<p align="center">
+
+**Your DSA solutions. Automatically organized, analyzed, and synced.**
+
+AlgoVault is an open-source Chrome Extension that automatically captures accepted Data Structures & Algorithms solutions from **LeetCode, GeeksforGeeks, HackerRank, and Codeforces** and syncs them to your GitHub repository.
+
+It also uses AI to analyze your solutions, identify complexity and algorithmic patterns, summarize intuition, and recommend what you should practice next.
+
+</p>
 
 ---
 
-## 🌟 Key Features in v1.1
+## 🌟 Why AlgoVault?
 
-* 🚀 **Multi-Platform Support**: Auto-detects accepted submissions on **LeetCode**, **GeeksforGeeks**, **HackerRank**, and **Codeforces**.
-* 🧠 **AI Complexity Analysis**: Automatically calculates **Time Complexity**, **Space Complexity**, **Algorithmic Patterns**, and **Intuition Summaries** for every accepted solution.
-* 🎯 **"What You Should Try Next" AI Recommendations**: Suggests the ideal next practice problem based on the solved question's pattern and difficulty.
-* ⚡ **Hybrid AI Engine**: Gemini 1.5 Flash API support with a zero-latency local static heuristic analyzer fallback.
-* 🔒 **100% Private & Local**: Operates strictly inside your browser via Manifest V3 Service Workers. Credentials stay local in `chrome.storage.local`.
-* 🎯 **Submit-Only Triggers**: Ignores casual page views or local code runs; only syncs when you explicitly click **Submit** and achieve an **Accepted** verdict.
-* 📁 **Deduplicated Repositories**: Multiple submissions of the same problem update the existing solution file while keeping your overall solved count accurate (1 problem = 1 count).
-* 📊 **Auto-Generated Dashboard (`README.md`)**: Automatically updates your GitHub repository's main `README.md` with Shields.io badges, visual progress bars, and a master problem index table.
-* 🎨 **Obsidian Dark Theme Popup**: Displays real-time active problem details, unique problem analytics, connection diagnostic tools, and an interactive **AI Assist** tab.
+When practicing DSA across multiple platforms, your solutions often end up scattered across different websites.
 
----
-
-## 🛠️ System Architecture
+AlgoVault brings them together into one personal GitHub-based vault.
 
 ```text
-               ┌─────────────────────────────────────────────────────────┐
-               │              Coding Platforms (In-Browser)               │
-               │  [LeetCode]   [GeeksforGeeks]   [HackerRank]   [Codeforces] │
-               └────────────────────────────┬────────────────────────────┘
-                                            │ DOM MutationObservers (Submit Trigger)
-                                            ▼
-               ┌─────────────────────────────────────────────────────────┐
-               │            Content Script Platform Adapters             │
-               │  • content_leetcode.js     • content_gfg.js              │
-               │  • content_hackerrank.js   • content_codeforces.js       │
-               └────────────────────────────┬────────────────────────────┘
-                                            │ chrome.runtime messaging
-                                            ▼
-               ┌─────────────────────────────────────────────────────────┐
-               │        Background Service Worker & Hybrid AI Engine      │
-               │  • ai_engine.js (Gemini 1.5 Flash + Local Fallback)     │
-               │  • Big-O Analysis & "Try Next" Recommendation Engine   │
-               │  • UTF-8 / Base64 Encoder   • Root README Dashboard Gen   │
-               └────────────────────────────┬────────────────────────────┘
-                                            │ HTTPS / Bearer PAT
-                                            ▼
-               ┌─────────────────────────────────────────────────────────┐
-               │              User's Personal GitHub Repository           │
-               │  LeetCode/  |  GeeksforGeeks/  |  HackerRank/  |  Codeforces/│
-               │  submissions.csv  |  README.md (Multi-Platform Dashboard) │
-               └────────────────└────────────────────────────────────────┘
+Solve a problem
+      ↓
+Submit
+      ↓
+Accepted ✅
+      ↓
+AlgoVault detects the submission
+      ↓
+Captures your solution
+      ↓
+AI analyzes the solution
+      ↓
+Syncs it to GitHub
+      ↓
+Your DSA knowledge base grows 📚
+```
+
+No separate database.
+No manual copying.
+No backend server.
+
+---
+
+## 🚀 Features
+
+### 🌐 Multi-Platform Support
+
+Automatically detects accepted submissions from:
+
+* 🟠 LeetCode
+* 🟢 GeeksforGeeks
+* 🔵 HackerRank
+* ⚫ Codeforces
+
+---
+
+### 🧠 AI-Powered Analysis
+
+For every accepted solution, AlgoVault can generate:
+
+* ⏱️ Time Complexity
+* 💾 Space Complexity
+* 🧩 Algorithmic Pattern
+* 💡 Intuition / Explanation
+* 🎯 Recommended Next Problem
+
+The AI engine supports Gemini API analysis with a local heuristic fallback.
+
+---
+
+### ⚡ Automatic GitHub Sync
+
+Solutions are organized directly inside your GitHub repository.
+
+Example:
+
+```text
+DSA-Problem-Vault/
+│
+├── LeetCode/
+├── GeeksforGeeks/
+├── HackerRank/
+├── Codeforces/
+│
+├── submissions.csv
+└── README.md
+```
+
+Your repository becomes a personal DSA knowledge base that grows automatically as you solve problems.
+
+---
+
+### 📊 Automatic Progress Dashboard
+
+AlgoVault can automatically update your repository README with:
+
+* Platform statistics
+* Solved problem counts
+* Progress indicators
+* Problem index
+* Solution metadata
+
+Your GitHub repository becomes both your **solution archive and progress dashboard**.
+
+---
+
+### 🔄 Smart Deduplication
+
+Submitting the same problem multiple times does not create duplicate entries.
+
+AlgoVault keeps the problem count based on **unique solved problems** while updating the corresponding solution.
+
+---
+
+### 🔒 Zero Backend
+
+AlgoVault does not require a dedicated backend server.
+
+The extension operates through:
+
+```text
+Chrome Extension
+      ↓
+Local browser storage
+      ↓
+GitHub API
+      ↓
+Your repository
+```
+
+Configuration and credentials used by the extension are stored locally through Chrome's extension storage.
+
+> ⚠️ Never share your GitHub Personal Access Token or Gemini API key with anyone.
+
+---
+
+## 🛠️ Architecture
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                    Coding Platforms                         │
+│                                                             │
+│   LeetCode   GFG   HackerRank   Codeforces                  │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           │ Submit → Accepted
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Content Script Adapters                    │
+│                                                             │
+│  content_leetcode.js                                        │
+│  content_gfg.js                                             │
+│  content_hackerrank.js                                      │
+│  content_codeforces.js                                      │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           │ chrome.runtime messaging
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Background Service Worker                      │
+│                                                             │
+│  • Solution processing                                      │
+│  • GitHub API communication                                  │
+│  • Repository organization                                  │
+│  • Dashboard generation                                     │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Hybrid AI Engine                         │
+│                                                             │
+│       Gemini API                    Local Analyzer           │
+│           │                              │                  │
+│           └──────────────┬───────────────┘                  │
+│                          ▼                                  │
+│                 Complexity + Pattern                        │
+│                 + Intuition + Next Problem                  │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           │ GitHub API
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Your GitHub Repository                     │
+│                                                             │
+│  Solutions + Statistics + README Dashboard                 │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📥 Installation Guide
+## 📥 Installation
 
-Follow these steps to install **AlgoVault v1.1** in **Google Chrome**:
+### 1. Clone the repository
 
-### Step 1: Clone / Download this Repository
 ```bash
 git clone https://github.com/shivinders12/AlgoVault.git
+cd AlgoVault
 ```
 
-### Step 2: Load Unpacked Extension in Chrome
-1. Open **Google Chrome** and navigate to `chrome://extensions`.
-2. Turn **ON** **Developer mode** (top-right toggle).
-3. Click **Load unpacked** (top-left button).
-4. Select the downloaded **`AlgoVault`** directory.
-5. Click **Select Folder**. The extension icon will appear in your toolbar!
+### 2. Open Chrome Extensions
+
+Navigate to:
+
+```text
+chrome://extensions
+```
+
+### 3. Enable Developer Mode
+
+Turn on **Developer mode** in the top-right corner.
+
+### 4. Load AlgoVault
+
+Click:
+
+**Load unpacked → Select the AlgoVault directory**
+
+The extension should now appear in your Chrome extensions list.
 
 ---
 
-## 🔑 GitHub Personal Access Token (PAT) & Gemini API Setup
+## 🔑 GitHub Configuration
 
-1. Go to your [GitHub Settings](https://github.com/settings/tokens?type=beta) ➔ **Fine-grained tokens** ➔ **Generate new token**.
-2. Set Token Name: `AlgoVault-Token`.
-3. Under **Repository Access**, select your `DSA-Problem-Vault` repository.
-4. Under **Permissions ➔ Repository permissions**, set **Contents** to **Read and write**.
-5. Click **Generate token** and copy your PAT string.
-6. Open the **AlgoVault** extension popup:
-   * Paste your **PAT Token**, **GitHub Username**, **Repository Name**, and optional **Gemini API Key**.
-   * Click **Save Configuration** ➔ **Test Connection**.
+AlgoVault uses the GitHub API to synchronize solutions with your repository.
+
+You'll need:
+
+* GitHub username
+* GitHub repository name
+* GitHub Personal Access Token
+
+Your token should have the minimum permissions required for the repository you want AlgoVault to modify.
+
+### Configure AlgoVault
+
+Open the extension popup and enter:
+
+```text
+GitHub Username
+GitHub Repository
+GitHub Personal Access Token
+Gemini API Key (optional)
+```
+
+Then select:
+
+**Save Configuration → Test Connection**
+
+> Never commit your API keys or Personal Access Tokens to this repository.
+
+---
+
+## 🤖 Gemini AI
+
+Gemini integration is optional.
+
+Without a Gemini API key, AlgoVault can use its local heuristic analysis where supported.
+
+With Gemini configured, the extension can generate richer analysis such as:
+
+```text
+Time Complexity
+Space Complexity
+Pattern
+Intuition
+What You Should Try Next
+```
+
+---
+
+## 🧪 Supported Platforms
+
+| Platform      | Solution Capture | GitHub Sync | AI Analysis |
+| ------------- | ---------------: | ----------: | ----------: |
+| LeetCode      |                ✅ |           ✅ |           ✅ |
+| GeeksforGeeks |                ✅ |           ✅ |           ✅ |
+| HackerRank    |                ✅ |           ✅ |           ✅ |
+| Codeforces    |                ✅ |           ✅ |           ✅ |
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Current
+
+* [x] Manifest V3 Chrome Extension
+* [x] Multi-platform solution detection
+* [x] GitHub synchronization
+* [x] Solution deduplication
+* [x] AI complexity analysis
+* [x] Pattern detection
+* [x] Next-problem recommendations
+* [x] Automatic GitHub dashboard
+
+### 🚧 Next
+
+* [ ] Improve platform adapters
+* [ ] Expand local AI heuristics
+* [ ] Improve AI analysis accuracy
+* [ ] Better error handling
+* [ ] More detailed solution analytics
+* [ ] Additional coding platforms
+* [ ] Community-driven feature development
+
+Have an idea?
+
+[Open a feature request](../../issues/new/choose) or start a Discussion.
+
+---
+
+## 🤝 Contributing
+
+AlgoVault is an open-source project and contributions are welcome.
+
+You can contribute through:
+
+* 💡 Feature ideas
+* 🐛 Bug fixes
+* 🎨 UI/UX improvements
+* 🤖 AI improvements
+* 🌐 New platform integrations
+* 📚 Documentation
+* 🧪 Testing
+* ⚡ Performance improvements
+
+Before contributing, please read:
+
+**[CONTRIBUTING.md](./.github/CONTRIBUTING.md)**
+
+For larger features, we recommend opening an Issue or Discussion before starting implementation.
+
+### Looking for something to work on?
+
+Check issues labeled:
+
+`good first issue` · `help wanted` · `enhancement` · `bug`
+
+Your first contribution is welcome. ❤️
+
+---
+
+## 🌍 Build With Us
+
+AlgoVault is part of **BuildWithShivinder**, an open-source community where developers build projects together.
+
+Whether you're here to use AlgoVault, suggest an idea, fix a bug, or build a new feature — you're welcome to contribute.
+
+**Build. Share. Contribute.**
 
 ---
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for details.
+AlgoVault is distributed under the **MIT License**.
+
+See [LICENSE](./LICENSE) for details.
+
+---
+
+## ⭐ Support the Project
+
+If AlgoVault is useful to you:
+
+⭐ Star the repository
+🐛 Report bugs
+💡 Suggest features
+🤝 Contribute code
+📢 Share it with other developers
+
+Every contribution helps AlgoVault grow.
