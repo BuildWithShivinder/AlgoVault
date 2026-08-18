@@ -82,6 +82,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  async function validateGitHubConnection(token, owner, repo) {
+     if (!token || !owner || !repo) {
+    return false;
+  }
+    try{
+      const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json'
+      }
+    });
+
+    return res.ok;
+    } catch(err) {
+      console.warn('[AlgoVault] GitHub connection validation failed:', err);
+    return false;
+    }
+  }
   // Load Saved Settings & Storage
   chrome.storage.local.get(['ghToken', 'ghOwner', 'ghRepo', 'ghBranch', 'geminiKey', 'syncHistory', 'solvedMap', 'currentDetectedProblem', 'lastAiAnalysis'], (data) => {
     if (data.ghToken) tokenInput.value = data.ghToken;
@@ -91,8 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.geminiKey) geminiKeyInput.value = data.geminiKey;
 
     if (data.ghToken && data.ghOwner && data.ghRepo) {
-      setConnectionBadge(true);
-      fetchCsvFromGitHub(data.ghToken, data.ghOwner, data.ghRepo, data.ghBranch || 'main');
+      validateGitHubConnection(data.ghToken, data.ghOwner, data.ghRepo).then((connected) => {
+        setConnectionBadge(connected);
+        if (connected) {
+          fetchCsvFromGitHub(data.ghToken, data.ghOwner, data.ghRepo, data.ghBranch || 'main');
+        }
+      });
     } else {
       setConnectionBadge(false);
     }
@@ -186,13 +208,39 @@ document.addEventListener('DOMContentLoaded', () => {
       geminiKey: geminiKeyInput.value.trim()
     };
 
-    chrome.storage.local.set(config, () => {
+    chrome.storage.local.set(config, async () => {
+    if (!config.ghToken || !config.ghOwner || !config.ghRepo) {
+      setConnectionBadge(false);
       showStatus('Configuration saved successfully.', 'success');
-      if (config.ghToken && config.ghOwner && config.ghRepo) {
-        setConnectionBadge(true);
-        fetchCsvFromGitHub(config.ghToken, config.ghOwner, config.ghRepo, config.ghBranch);
-      }
-    });
+      return;
+    }
+
+    showStatus('Validating GitHub credentials...', 'success');
+
+    const connected = await validateGitHubConnection(
+      config.ghToken,
+      config.ghOwner,
+      config.ghRepo
+    );
+
+    setConnectionBadge(connected);
+
+    if (connected) {
+      showStatus('Configuration saved and GitHub connection verified.', 'success');
+
+      fetchCsvFromGitHub(
+        config.ghToken,
+        config.ghOwner,
+        config.ghRepo,
+        config.ghBranch
+      );
+    } else {
+      showStatus(
+        'Configuration saved, but GitHub credentials are invalid.',
+        'error'
+      );
+    }
+  });
   });
 
   // Test Connection Handler
