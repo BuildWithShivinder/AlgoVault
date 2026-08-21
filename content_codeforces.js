@@ -224,6 +224,15 @@
                 duration: 7000
               });
             }
+          } else {
+            if(window.CodeSyncToast) {
+              window.CodeSyncToast.show({
+                type: 'error',
+                title: 'CodeSync Error',
+                message: `Failed to sync "${payload.title}" to GitHub. ${response?.result?.error || 'Please check your GitHub configuration.'}`,
+                duration: 7000
+              });
+            }
           }
         });
       }
