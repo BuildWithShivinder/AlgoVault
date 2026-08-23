@@ -61,11 +61,11 @@ Keep your changes focused and avoid unrelated modifications.
 
 ### 5. Test the extension
 
-Load the extension locally in Chrome using:
+Load the extension locally in Chrome by following the [Installation guide](../README.md#-installation) in the README:
 
-**chrome://extensions**
-
-Enable **Developer mode**, then select **Load unpacked** and choose the AlgoVault directory.
+1. Open **chrome://extensions**
+2. Enable **Developer mode**
+3. Click **Load unpacked** and choose the AlgoVault directory
 
 Test the affected functionality before submitting your Pull Request.
 

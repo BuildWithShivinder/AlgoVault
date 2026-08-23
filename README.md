@@ -199,6 +199,12 @@ Configuration and credentials used by the extension are stored locally through C
 
 ## 📥 Installation
 
+### Requirements
+
+* A Chromium-based browser with Manifest V3 support: **Chrome**, **Edge**, **Brave**, or Arc.
+* A GitHub account.
+* No Node.js or build step required — AlgoVault is plain HTML/JS that you load directly as a folder.
+
 ### 1. Clone the repository
 
 ```bash
@@ -208,7 +214,7 @@ cd AlgoVault
 
 ### 2. Open Chrome Extensions
 
-Navigate to:
+Open a new tab and navigate to:
 
 ```text
 chrome://extensions
@@ -216,15 +222,16 @@ chrome://extensions
 
 ### 3. Enable Developer Mode
 
-Turn on **Developer mode** in the top-right corner.
+Turn on the **Developer mode** toggle in the top-right corner of the page.
 
 ### 4. Load AlgoVault
 
-Click:
+1. Click **Load unpacked** (top-left).
+2. Select the cloned `AlgoVault` directory.
+3. The extension should now appear in your extensions list.
+4. Optional: click the puzzle-piece icon in the toolbar and **pin** AlgoVault for quick access.
 
-**Load unpacked → Select the AlgoVault directory**
-
-The extension should now appear in your Chrome extensions list.
+> **Troubleshooting:** If the extension doesn't appear after loading, refresh `chrome://extensions` and check that you selected the folder containing `manifest.json` (the root `AlgoVault` folder, not a parent directory). If accepted submissions aren't being captured, make sure you are logged in to the coding platform and try reloading the tab once.
 
 ---
 
@@ -238,7 +245,43 @@ You'll need:
 * GitHub repository name
 * GitHub Personal Access Token
 
-Your token should have the minimum permissions required for the repository you want AlgoVault to modify.
+Your vault repository can be **public or private** — AlgoVault works with both. The token only needs one permission: **read and write access to repository contents** for that single repository.
+
+### Creating a Personal Access Token
+
+AlgoVault needs a Personal Access Token (PAT) so it can save solutions to your repository on your behalf. You'll create this token once on github.com — it takes about two minutes.
+
+#### Option A — Fine-grained token (Recommended — more secure)
+
+1. **Log in to GitHub** and click your **profile picture** in the top-right corner.
+2. Click **Settings** in the dropdown menu.
+3. In the left sidebar, scroll all the way down and click **Developer settings** (it's the last item).
+4. Click **Personal access tokens → Fine-grained tokens**, then click **Generate new token**.
+5. Fill in the form:
+   * **Token name:** something like `AlgoVault` so you remember what it's for.
+   * **Expiration:** pick how long it should last (e.g., 90 days). When it expires, you'll need to generate a new one.
+   * **Resource owner:** select yourself (your username).
+6. Under **Repository access**, choose **Only select repositories**, then pick the repository AlgoVault will sync to (e.g., `DSA-Problem-Vault`). This limits the token to just that one repo.
+7. Expand **Permissions → Repository permissions**, find **Contents**, and set it to **Read and write**.
+   * This grants read and write access to all files in that repository, including private repositories.
+   * That's the only permission you need to change. GitHub automatically adds **Metadata: Read-only** — leave it as is.
+8. Click **Generate token** at the bottom.
+9. **Copy the token immediately** and paste it into AlgoVault's popup under *GitHub Personal Access Token*. GitHub shows it only this once — if you lose it, you must generate a new one.
+
+#### Option B — Classic token
+
+Follow steps 1–3 above, then:
+
+1. Click **Personal access tokens → Tokens (classic)** → **Generate new token (classic)**.
+2. Give it a note (e.g., `AlgoVault`) and set an expiration.
+3. Under **Select scopes**, tick **`repo`** (full control of private repositories). Leave every other box unchecked.
+   * Note: classic tokens cover **all** of your repositories and cannot be limited to a single repo — another reason Option A is safer.
+4. Click **Generate token**, copy it right away, and paste it into the extension.
+
+#### Keeping your token safe
+
+* Never share your token or commit it to any repository — treat it like a password.
+* If you ever suspect it leaked, revoke it under **Developer settings → Personal access tokens** and generate a new one.
 
 ### Configure AlgoVault
 
