@@ -46,6 +46,76 @@ function parseCsvLine(line) {
   return result;
 }
 
+function isCFamilyLanguage(language) {
+  return /^(javascript|typescript|c\+\+|c|java|c#|go|rust|swift|kotlin|scala|php)$/i.test(String(language || '').trim().toLowerCase());
+}
+
+function hasBalancedDelimiters(code) {
+  let inSingleQuote = false;
+  let inDoubleQuote = false;
+  let inTemplate = false;
+  let inLineComment = false;
+  let inBlockComment = false;
+  let braces = 0;
+  let parens = 0;
+
+  for (let i = 0; i < code.length; i++) {
+    const char = code[i];
+    const next = code[i + 1];
+
+    if (inLineComment) {
+      if (char === '\n') inLineComment = false;
+      continue;
+    }
+    if (inBlockComment) {
+      if (char === '*' && next === '/') { inBlockComment = false; i++; }
+      continue;
+    }
+    if (inSingleQuote) {
+      if (char === '\\') { i++; } else if (char === "'") { inSingleQuote = false; }
+      continue;
+    }
+    if (inDoubleQuote) {
+      if (char === '\\') { i++; } else if (char === '"') { inDoubleQuote = false; }
+      continue;
+    }
+    if (inTemplate) {
+      if (char === '\\') { i++; } else if (char === '`') { inTemplate = false; }
+      continue;
+    }
+
+    if (char === '/' && next === '/') { inLineComment = true; i++; continue; }
+    if (char === '/' && next === '*') { inBlockComment = true; i++; continue; }
+
+    switch (char) {
+      case "'": inSingleQuote = true; break;
+      case '"': inDoubleQuote = true; break;
+      case '`': inTemplate = true; break;
+      case '{': braces++; break;
+      case '}': braces--; break;
+      case '(': parens++; break;
+      case ')': parens--; break;
+    }
+
+    if (braces < 0 || parens < 0) return false;
+  }
+
+  return braces === 0 && parens === 0;
+}
+
+function getIncompleteCodeReason(code, language) {
+  if (!code || !code.trim()) return 'code capture was empty';
+  const trimmed = code.trim();
+  if (trimmed === '// Solution Code') return 'code capture was a placeholder stub';
+  if (trimmed.length < 30) return 'code capture was too short';
+
+  if (isCFamilyLanguage(language) && !hasBalancedDelimiters(trimmed)) {
+    return 'code capture had unbalanced delimiters';
+  }
+
+  return null;
+}
+
 function normalizePlatform(p) {
   if (!p) return 'LeetCode';
   const s = String(p).toLowerCase().trim();
@@ -416,6 +486,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     if (request.data && request.data.platform) {
       request.data.platform = normalizePlatform(request.data.platform);
+    }
+
+    const incompleteReason = getIncompleteCodeReason(request.data && request.data.code, request.data && request.data.language);
+    if (incompleteReason) {
+      console.warn('[AlgoVault] Blocked incomplete code capture:', incompleteReason);
+      chrome.action.setBadgeText({ text: 'ERR' });
+      chrome.action.setBadgeBackgroundColor({ color: '#ef4444' });
+
+      const skippedError = `Incomplete code capture (${incompleteReason}). Open the AlgoVault popup and press Sync to retry.`;
+      chrome.storage.local.get(['syncHistory'], (data) => {
+        let history = data.syncHistory || [];
+        const normPlatform = normalizePlatform(request.data.platform);
+        const uniqueKey = `${normPlatform}_${(request.data.title || '').toLowerCase()}`;
+        history = history.filter(item => `${normalizePlatform(item.platform)}_${(item.title || '').toLowerCase()}` !== uniqueKey);
+        history.unshift({ ...request.data, platform: normPlatform, status: 'Failed', error: skippedError });
+        chrome.storage.local.set({ syncHistory: history.slice(0, 50), lastSyncResult: { success: false, error: skippedError } });
+      });
+
+      setTimeout(() => chrome.action.setBadgeText({ text: '' }), 5000);
+      sendResponse({ status: 'ERROR', result: { success: false, error: skippedError } });
+      return true;
     }
 
     chrome.action.setBadgeText({ text: 'SYNC' });
