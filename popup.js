@@ -13,6 +13,27 @@ function getFriendlyGitHubError(status, message) {
     return `GitHub request failed${message ? `: ${message}` : "."}`;
   }
 }
+
+function parseCsvLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Tab Bar Switching
   const navBtns = document.querySelectorAll('.nav-btn');
@@ -321,12 +342,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const line = lines[i].trim();
             if (!line) continue;
             
-            const parts = line.split(',');
-            if (parts.length >= 4) {
-              const platform = normalizePlatform(parts[0]);
-              let title = parts[2] ? parts[2].replace(/"/g, '').trim() : '';
-              let diff = parts[3] ? parts[3].replace(/"/g, '').trim() : 'Medium';
-              if (parts.length === 6) {
+            const parts = parseCsvLine(line);
+            if (parts.length >= 5) {
+              let platform = normalizePlatform(parts[0]);
+              let title = '';
+              let diff = 'Medium';
+
+              if (parts.length >= 7) {
+                // 7-column format: Platform,Problem ID,Title,Difficulty,Language,URL,Timestamp
+                title = parts[2] ? parts[2].replace(/"/g, '').trim() : '';
+                diff = parts[3] ? parts[3].replace(/"/g, '').trim() : 'Medium';
+              } else if (parts.length === 5) {
+                // Legacy 5-column format: Problem ID,Title,Difficulty,Language,URL
+                platform = 'LeetCode';
                 title = parts[1] ? parts[1].replace(/"/g, '').trim() : '';
                 diff = parts[2] ? parts[2].replace(/"/g, '').trim() : 'Medium';
               }
